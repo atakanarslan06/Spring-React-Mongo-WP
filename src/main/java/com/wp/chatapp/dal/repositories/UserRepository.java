@@ -1,6 +1,6 @@
-package com.wp.chatapp.repository;
+package com.wp.chatapp.dal.repositories;
 
-import com.wp.chatapp.model.User;
+import com.wp.chatapp.dal.models.User;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserRepository extends MongoRepository<User, String> {

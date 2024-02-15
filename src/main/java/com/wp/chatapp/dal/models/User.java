@@ -1,4 +1,4 @@
-package com.wp.chatapp.model;
+package com.wp.chatapp.dal.models;
 
 import lombok.Builder;
 import lombok.Data;
@@ -23,5 +23,5 @@ public class User {
     private String email;
     private String password;
     private String profile_picture;
-    private List<String> friends;
+
 }
