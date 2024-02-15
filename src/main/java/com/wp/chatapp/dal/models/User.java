@@ -23,5 +23,6 @@ public class User {
     private String email;
     private String password;
     private String profile_picture;
+    private List<String> friends;
 
 }
