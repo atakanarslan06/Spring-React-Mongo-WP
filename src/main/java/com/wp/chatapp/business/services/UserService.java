@@ -5,6 +5,7 @@ import com.wp.chatapp.dal.models.User;
 import com.wp.chatapp.dal.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -56,6 +57,7 @@ public class UserService {
         return userRepository.findAll();
     }
     public Optional<User> getUserById(String id){
+
         return userRepository.findById(id);
     }
     public String addFriend(String userId, String friendId) {
@@ -72,14 +74,29 @@ public class UserService {
         User user = userOptional.get();
         User friend = friendOptional.get();
 
-        if (user.getFriends().contains(friendId)) {
+        if (user.getFriends() == null) {
+            user.setFriends(new ArrayList<>());
+        }
+
+        if (friend.getFriends() == null) {
+            friend.setFriends(new ArrayList<>());
+        }
+
+        if (user.getFriends().contains(friend.getId())) {
             return "Friend already exists";
         }
 
-        user.getFriends().add(friendId);
+        user.getFriends().add(friend.getId());
+        friend.getFriends().add(user.getId());
+
         userRepository.save(user);
+        userRepository.save(friend);
+
         return "Friend Added Successfully";
     }
+
+
+
 
     public String removeFriend(String userId, String friendId) {
         Optional<User> userOptional = userRepository.findById(userId);
