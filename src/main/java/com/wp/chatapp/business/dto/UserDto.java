@@ -8,8 +8,9 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Builder
 public class UserDto {
     private String id;
-    private String userName;
+    private String username;
     private String email;
     private String password;
+    private String phoneNumber;
     private String profile_picture;
 }
