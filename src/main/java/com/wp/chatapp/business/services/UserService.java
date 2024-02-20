@@ -20,7 +20,7 @@ public class UserService {
         try
         {
             User user = User.builder()
-                    .userName(userDto.getUserName())
+                    .username(userDto.getUsername())
                     .email(userDto.getEmail())
                     .password(userDto.getPassword())
                     .build();
@@ -36,7 +36,7 @@ public class UserService {
         Optional<User> existingUserOptional = userRepository.findById(id);
         if (existingUserOptional.isPresent()){
             User existingUser = existingUserOptional.get();
-            existingUser.setUserName(userDto.getUserName());
+            existingUser.setUsername(userDto.getUsername());
             existingUser.setEmail(userDto.getEmail());
             existingUser.setPassword(userDto.getPassword());
             userRepository.save(existingUser);
