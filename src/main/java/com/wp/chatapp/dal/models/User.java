@@ -24,5 +24,6 @@ public class User {
     private String password;
     private String profile_picture;
     private List<String> friends;
+    private boolean active;
 
 }
