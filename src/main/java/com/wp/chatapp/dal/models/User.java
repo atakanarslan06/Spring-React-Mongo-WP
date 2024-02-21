@@ -29,7 +29,7 @@ public class User implements UserDetails {
     private List<String> friends;
     private boolean active;
 
-    private Role role;
+    private Role role = Role.USER;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
