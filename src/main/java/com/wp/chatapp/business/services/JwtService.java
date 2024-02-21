@@ -2,6 +2,7 @@ package com.wp.chatapp.business.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+<<<<<<< HEAD
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -12,15 +13,31 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+=======
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
+
+import java.security.Key;
+import java.util.Base64;
+>>>>>>> origin/master
 import java.util.function.Function;
 
 @Service
 public class JwtService {
+<<<<<<< HEAD
     private static final String SECRET_KEY = "a52608528dd96052f91b63c21af6310c0edbbbfd60e952765f5e23bd0c7d2924";
 
     public String extractUsername(String token) {
 
         return extractClaim(token, Claims::getSubject);
+=======
+
+    private static final String SECRET_KEY = "a52608528dd96052f91b63c21af6310c0edbbbfd60e952765f5e23bd0c7d2924";
+
+    public String extractUsername(String token) {
+        return null;
+>>>>>>> origin/master
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
@@ -28,6 +45,7 @@ public class JwtService {
         return claimsResolver.apply(claims);
     }
 
+<<<<<<< HEAD
     public String generateToken(UserDetails userDetails){
         return generateToken(new HashMap<>(), userDetails);
     }
@@ -59,6 +77,8 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
+=======
+>>>>>>> origin/master
     private Claims extractAllClaims(String token){
         return Jwts
                 .parserBuilder()
