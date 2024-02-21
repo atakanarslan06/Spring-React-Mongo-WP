@@ -29,7 +29,7 @@ public class UserService {
         }
         catch (Exception e)
         {
-        return "User Not Created";
+            return "User Not Created";
         }
     }
     public String updateUser(String id, UserDto userDto){
@@ -120,9 +120,6 @@ public class UserService {
         return "Friend Added Successfully";
     }
 
-
-
-
     public String removeFriend(String userId, String friendId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
@@ -139,5 +136,4 @@ public class UserService {
         userRepository.save(user);
         return "Friend Removed Successfully";
     }
-
 }
