@@ -4,8 +4,6 @@ import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.List;
-
 @Data
 @Builder
 public class UserDto {
@@ -15,5 +13,5 @@ public class UserDto {
     private String password;
     private String phoneNumber;
     private String profile_picture;
-
+    private String role;
 }

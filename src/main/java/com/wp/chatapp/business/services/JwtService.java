@@ -2,7 +2,6 @@ package com.wp.chatapp.business.services;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-<<<<<<< HEAD
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -10,42 +9,21 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-=======
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Service;
-
-import java.security.Key;
-import java.util.Base64;
->>>>>>> origin/master
 import java.util.function.Function;
 
 @Service
 public class JwtService {
-<<<<<<< HEAD
+
     private static final String SECRET_KEY = "a52608528dd96052f91b63c21af6310c0edbbbfd60e952765f5e23bd0c7d2924";
 
     public String extractUsername(String token) {
-
         return extractClaim(token, Claims::getSubject);
-=======
 
-    private static final String SECRET_KEY = "a52608528dd96052f91b63c21af6310c0edbbbfd60e952765f5e23bd0c7d2924";
-
-    public String extractUsername(String token) {
-        return null;
->>>>>>> origin/master
     }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-<<<<<<< HEAD
     public String generateToken(UserDetails userDetails){
         return generateToken(new HashMap<>(), userDetails);
     }
@@ -66,19 +44,22 @@ public class JwtService {
 
     public boolean isTokenValid(String token, UserDetails userDetails){
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return (username.equals(userDetails.getUsername())) && !istokenExpired(token);
     }
 
-    private boolean isTokenExpired(String token) {
+    private boolean istokenExpired(String token){
         return extractExpiration(token).before(new Date());
     }
 
-    private Date extractExpiration(String token){
+    private Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-=======
->>>>>>> origin/master
+    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver){
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
     private Claims extractAllClaims(String token){
         return Jwts
                 .parserBuilder()
