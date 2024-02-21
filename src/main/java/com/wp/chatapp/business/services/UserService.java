@@ -20,7 +20,7 @@ public class UserService {
         try
         {
             User user = User.builder()
-                    .userName(userDto.getUserName())
+                    .username(userDto.getUsername())
                     .email(userDto.getEmail())
                     .password(userDto.getPassword())
                     .build();
@@ -29,14 +29,14 @@ public class UserService {
         }
         catch (Exception e)
         {
-        return "User Not Created";
+            return "User Not Created";
         }
     }
     public String updateUser(String id, UserDto userDto){
         Optional<User> existingUserOptional = userRepository.findById(id);
         if (existingUserOptional.isPresent()){
             User existingUser = existingUserOptional.get();
-            existingUser.setUserName(userDto.getUserName());
+            existingUser.setUsername(userDto.getUsername());
             existingUser.setEmail(userDto.getEmail());
             existingUser.setPassword(userDto.getPassword());
             userRepository.save(existingUser);
@@ -45,6 +45,31 @@ public class UserService {
             return "User Not Found";
         }
     }
+
+    public String activateUser(String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setActive(true);
+            userRepository.save(user);
+            return "User activated successfully";
+        } else {
+            return "User not found";
+        }
+    }
+
+    public String deactivateUser(String userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            user.setActive(false);
+            userRepository.save(user);
+            return "User deactivated successfully";
+        } else {
+            return "User not found";
+        }
+    }
+
     public String deleteUser(String id) {
         try {
             userRepository.deleteById(id);
@@ -62,12 +87,12 @@ public class UserService {
     }
     public String addFriend(String userId, String friendId) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             return "User Not Found";
         }
 
         Optional<User> friendOptional = userRepository.findById(friendId);
-        if (!friendOptional.isPresent()) {
+        if (friendOptional.isEmpty()) {
             return "Friend User Not Found";
         }
 
@@ -95,12 +120,9 @@ public class UserService {
         return "Friend Added Successfully";
     }
 
-
-
-
     public String removeFriend(String userId, String friendId) {
         Optional<User> userOptional = userRepository.findById(userId);
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             return "User Not Found";
         }
 
@@ -114,5 +136,4 @@ public class UserService {
         userRepository.save(user);
         return "Friend Removed Successfully";
     }
-
 }
