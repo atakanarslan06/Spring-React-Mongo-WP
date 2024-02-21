@@ -1,5 +1,6 @@
 package com.wp.chatapp.dal.models;
 
+import com.wp.chatapp.business.enums.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -8,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.management.relation.Role;
 import java.util.Collection;
 import java.util.List;
 
@@ -37,12 +37,12 @@ public class User implements UserDetails {
     }
 
     @Override
-    public String getUsername(){
-        return email;
+    public String getUsername() {
+        return username;
     }
 
     @Override
-    public String getPassword(){
+    public String getPassword() {
         return password;
     }
 

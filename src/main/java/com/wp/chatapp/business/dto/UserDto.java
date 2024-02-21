@@ -13,4 +13,5 @@ public class UserDto {
     private String password;
     private String phoneNumber;
     private String profile_picture;
+    private String role;
 }
