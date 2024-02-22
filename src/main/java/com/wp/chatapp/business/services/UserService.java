@@ -3,9 +3,9 @@ package com.wp.chatapp.business.services;
 import com.wp.chatapp.business.dto.UserDto;
 import com.wp.chatapp.dal.models.User;
 import com.wp.chatapp.dal.repositories.UserRepository;
+import com.wp.chatapp.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +24,7 @@ public class UserService {
                     .email(userDto.getEmail())
                     .password(userDto.getPassword())
                     .build();
+            user.setActive(true);
             userRepository.save(user);
             return "User Created Successfully";
         }
@@ -69,15 +70,6 @@ public class UserService {
             return "User not found";
         }
     }
-
-    public String deleteUser(String id) {
-        try {
-            userRepository.deleteById(id);
-            return "User Deleted Successfully";
-        }catch (Exception e){
-            return "User Not Deleted";
-        }
-    }
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -85,55 +77,30 @@ public class UserService {
 
         return userRepository.findById(id);
     }
-    public String addFriend(String userId, String friendId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return "User Not Found";
-        }
 
-        Optional<User> friendOptional = userRepository.findById(friendId);
-        if (friendOptional.isEmpty()) {
-            return "Friend User Not Found";
-        }
+    public User findByPhoneNumber(String phoneNumber) {
+        return userRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() -> new NotFoundException("User not found with phone number: " + phoneNumber));
+    }
 
-        User user = userOptional.get();
-        User friend = friendOptional.get();
-
-        if (user.getFriends() == null) {
-            user.setFriends(new ArrayList<>());
-        }
-
-        if (friend.getFriends() == null) {
-            friend.setFriends(new ArrayList<>());
-        }
-
-        if (user.getFriends().contains(friend.getId())) {
-            return "Friend already exists";
-        }
-
-        user.getFriends().add(friend.getId());
-        friend.getFriends().add(user.getId());
+    public String acceptFriendRequest(String userId, String friendId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id:" + userId));
+        User friend = userRepository.findById(friendId)
+                .orElseThrow(() -> new NotFoundException("Friend not found with id:" + friendId));
+        user.addFriend(friend.getId());
+        friend.addFriend(user.getId());
 
         userRepository.save(user);
         userRepository.save(friend);
 
-        return "Friend Added Successfully";
+        return "Friend request accepted successfully";
     }
-
-    public String removeFriend(String userId, String friendId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return "User Not Found";
+    public String rejectFriendRequest(String userId, String friendId){
+        try {
+            return "Friend request rejected successfully";
+        }catch (Exception e){
+            return "Friend request could not be rejected:" + e.getMessage();
         }
-
-        User user = userOptional.get();
-
-        if (!user.getFriends().contains(friendId)) {
-            return "Friend Not Found";
-        }
-
-        user.getFriends().remove(friendId);
-        userRepository.save(user);
-        return "Friend Removed Successfully";
     }
 }

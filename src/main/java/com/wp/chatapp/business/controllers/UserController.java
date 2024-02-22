@@ -10,33 +10,29 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping(path = "/api/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
-    @PostMapping("/create")
+
+    @PostMapping
     public ResponseEntity<String> createUser(@RequestBody UserDto userDto){
         String response = userService.createUser(userDto);
         return ResponseEntity.ok(response);
     }
-    @PutMapping("/update/{id}")
-    public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody UserDto userDto){
-        String response = userService.updateUser(id, userDto);
-        return ResponseEntity.ok(response);
-    }
-
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable String id){
-        String response = userService.deleteUser(id);
-        return ResponseEntity.ok(response);
-    }
-    @GetMapping("/getAll")
+    @GetMapping
     public ResponseEntity<List<User>> getAllUsers(){
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateUser(@PathVariable String id, @RequestBody UserDto userDto){
+        String response = userService.updateUser(id, userDto);
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id){
@@ -48,14 +44,34 @@ public class UserController {
             return ResponseEntity.notFound().build();
         }
     }
-    @PostMapping("/{userId}/addFriend/{friendId}")
-    public ResponseEntity<String> addFriend(@PathVariable String userId, @PathVariable String friendId) {
-        String response = userService.addFriend(userId, friendId);
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<String> activateUser(@PathVariable String id){
+        String response = userService.activateUser(id);
         return ResponseEntity.ok(response);
     }
-    @DeleteMapping("/{userId}/removeFriend/{friendId}")
-    public ResponseEntity<String> removeFriend(@PathVariable String userId, @PathVariable String friendId ){
-        String response = userService.removeFriend(userId, friendId);
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateUser(@PathVariable String id){
+        String response = userService.deactivateUser(id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/findByPhoneNumber/{phoneNumber}")
+    public ResponseEntity<User> findByPhoneNumber(@PathVariable String phoneNumber){
+      User user = userService.findByPhoneNumber(phoneNumber);
+      return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/acceptRequest/{userId}/{friendId}")
+    public ResponseEntity<String> acceptFriendRequest(@PathVariable String userId, @PathVariable String friendId){
+        String response = userService.acceptFriendRequest(userId, friendId);
+        return ResponseEntity.ok(response);
+    }
+    @PostMapping("/rejectRequest/{userId}/{friendId}")
+    public ResponseEntity<String> rejectFriendRequest(@PathVariable String userId, @PathVariable String friendId){
+        String response = userService.rejectFriendRequest(userId, friendId);
+        return ResponseEntity.ok(response);
+    }
+
 }
