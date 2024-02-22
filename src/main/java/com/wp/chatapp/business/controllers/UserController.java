@@ -63,14 +63,20 @@ public class UserController {
       return ResponseEntity.ok(user);
     }
 
+    @PostMapping("/sendFriendRequest/{senderId}/{receiverPhoneNumber}")
+    public ResponseEntity<String> sendFriendRequest(@PathVariable String senderId,@PathVariable String receiverPhoneNumber){
+        String response = userService.sendFriendRequest(senderId, receiverPhoneNumber);
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/acceptRequest/{userId}/{friendId}")
     public ResponseEntity<String> acceptFriendRequest(@PathVariable String userId, @PathVariable String friendId){
         String response = userService.acceptFriendRequest(userId, friendId);
         return ResponseEntity.ok(response);
     }
-    @PostMapping("/rejectRequest/{userId}/{friendId}")
-    public ResponseEntity<String> rejectFriendRequest(@PathVariable String userId, @PathVariable String friendId){
-        String response = userService.rejectFriendRequest(userId, friendId);
+    @PostMapping("/rejectRequest")
+    public ResponseEntity<String> rejectFriendRequest(){
+        String response = userService.rejectFriendRequest();
         return ResponseEntity.ok(response);
     }
 
