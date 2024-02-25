@@ -86,51 +86,12 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("User not found with phone number: " + phoneNumber));
     }
 
-    public String acceptFriendRequest(String userId, String friendId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found with id:" + userId));
-        User friend = userRepository.findById(friendId)
-                .orElseThrow(() -> new NotFoundException("Friend not found with id:" + friendId));
-
-        // Arkadaş listelerini kontrol et ve başlat
-        if (user.getFriends() == null) {
-            user.setFriends(new ArrayList<>());
-        }
-        if (user.getFriendRequests() == null) {
-            user.setFriendRequests(new ArrayList<>());
-        }
-        if (friend.getFriends() == null) {
-            friend.setFriends(new ArrayList<>());
-        }
-        if (friend.getFriendRequests() == null) {
-            friend.setFriendRequests(new ArrayList<>());
-        }
-
-        // Gönderenin friendRequests listesinden alıcının ID'sini kaldırma
-        user.getFriendRequests().remove(friendId);
-
-        // Alıcının friendRequests listesinden gönderenin ID'sini kaldırma
-        friend.getFriendRequests().remove(userId);
-
-        // Her iki kullanıcının da friend listesine karşı tarafın ID'sini ekleme
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-
-        // Veritabanına değişiklikleri kaydet
-        userRepository.save(user);
-        userRepository.save(friend);
-
-        return "Friend request accepted successfully";
-    }
-
-    public String rejectFriendRequest() {
-        return "Friend request rejected successfully";
-    }
-
     public String sendFriendRequest(String senderId, String receiverPhoneNumber) {
+        // Gönderen kullanıcıyı id'sine göre veritabanından bulur, bulunamazsa hata fırlatır
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new NotFoundException("Sender not found"));
 
+        // Alıcı kullanıcıyı telefon numarasına göre veritabanından bulur, bulunamazsa hata fırlatır
         User receiver = userRepository.findByPhoneNumber(receiverPhoneNumber)
                 .orElseThrow(() -> new NotFoundException("Receiver not found"));
 
@@ -159,5 +120,44 @@ public class UserService {
         } else {
             return "Friend request already sent";
         }
+    }
+
+    public String acceptFriendRequest(String userId, String friendId) {
+        // Veritabanından kullanıcı ve arkadaş bilgilerini alır
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id:" + userId));
+        User friend = userRepository.findById(friendId)
+                .orElseThrow(() -> new NotFoundException("Friend not found with id:" + friendId));
+
+        // Kullanıcının arkadaş listelerini kontrol eder ve gerekirse yeni boş listeler oluşturur
+        if (user.getFriends() == null) {
+            user.setFriends(new ArrayList<>());
+        }
+        if (friend.getFriends() == null) {
+            friend.setFriends(new ArrayList<>());
+        }
+        if (friend.getFriendRequests() == null) {
+            friend.setFriendRequests(new ArrayList<>());
+        }
+
+        // Her iki kullanıcının da friend requests listelerinden birbirlerinin id'lerini kaldırır
+        user.getFriendRequests().remove(friendId);
+        friend.getFriendRequests().remove(userId);
+
+        // Her iki kullanıcının da arkadaş listesine birbirlerinin id'lerini ekler
+        user.getFriends().add(friendId);
+        friend.getFriends().add(userId);
+
+        // Yapılan değişiklikleri veritabanına kaydeder
+        userRepository.save(user);
+        userRepository.save(friend);
+
+        // Başarılı mesajını döndürür
+        return "Friend request accepted successfully";
+
+    }
+
+    public String rejectFriendRequest() {
+        return "Friend request rejected successfully";
     }
 }
