@@ -157,7 +157,18 @@ public class UserService {
 
     }
 
-    public String rejectFriendRequest() {
-        return "Friend request rejected successfully";
+    public String rejectFriendRequest(String userId, String requestId) {
+        // İlgili kullanıcıyı veritabanından bul
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + userId));
+
+        // Reddedilecek arkadaşlık isteğini bul
+        if (user.getFriendRequests().contains(requestId)) {
+            user.getFriendRequests().remove(requestId);
+            userRepository.save(user);
+            return "Friend request rejected successfully";
+        } else {
+            return "Friend request not found or already rejected";
+        }
     }
 }

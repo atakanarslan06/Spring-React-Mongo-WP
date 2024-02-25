@@ -74,9 +74,9 @@ public class UserController {
         String response = userService.acceptFriendRequest(userId, friendId);
         return ResponseEntity.ok(response);
     }
-    @PostMapping("/rejectRequest")
-    public ResponseEntity<String> rejectFriendRequest(){
-        String response = userService.rejectFriendRequest();
+    @PostMapping("/rejectRequest/{userId}/{requestId}")
+    public ResponseEntity<String> rejectFriendRequest(@PathVariable String userId, @PathVariable String requestId) {
+        String response = userService.rejectFriendRequest(userId, requestId);
         return ResponseEntity.ok(response);
     }
 
