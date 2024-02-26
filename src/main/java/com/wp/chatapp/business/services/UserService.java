@@ -1,21 +1,25 @@
 package com.wp.chatapp.business.services;
 
 import com.wp.chatapp.business.dto.UserDto;
+import com.wp.chatapp.business.enums.RequestStatus;
+import com.wp.chatapp.dal.models.FriendshipRequest;
 import com.wp.chatapp.dal.models.User;
+import com.wp.chatapp.dal.repositories.FriendshipRequestRepository;
 import com.wp.chatapp.dal.repositories.UserRepository;
 import com.wp.chatapp.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final FriendshipRequestRepository friendshipRequestRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, FriendshipRequestRepository friendshipRequestRepository) {
         this.userRepository = userRepository;
+        this.friendshipRequestRepository = friendshipRequestRepository;
     }
 
     public String createUser(UserDto userDto) {
@@ -48,15 +52,6 @@ public class UserService {
         }
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public Optional<User> getUserById(String id) {
-
-        return userRepository.findById(id);
-    }
-
     public String activateUser(String userId) {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
@@ -81,86 +76,93 @@ public class UserService {
         }
     }
 
+    public List<User> getAllUsers() {
+        List<User> allUsers = userRepository.findAll();
+        return allUsers.stream()
+                .filter(User::isActive)
+                .collect(Collectors.toList());
+    }
+
+
+    public Optional<User> getUserById(String id) {
+        return userRepository.findByIdAndActive(id, true);
+    }
+
+
     public User findByPhoneNumber(String phoneNumber) {
         return userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found with phone number: " + phoneNumber));
     }
 
-    public String sendFriendRequest(String senderId, String receiverPhoneNumber) {
-        // Gönderen kullanıcıyı id'sine göre veritabanından bulur, bulunamazsa hata fırlatır
+    public String sendFriendRequest(String senderId, String receiverId) {
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new NotFoundException("Sender not found"));
 
-        // Alıcı kullanıcıyı telefon numarasına göre veritabanından bulur, bulunamazsa hata fırlatır
-        User receiver = userRepository.findByPhoneNumber(receiverPhoneNumber)
-                .orElseThrow(() -> new NotFoundException("Receiver not found"));
-
-        // Gönderen ve alıcı zaten arkadaşlarsa veya istek zaten gönderilmişse, tekrar istek gönderilmez
-        if ((sender.getFriends() != null && sender.getFriends().contains(receiver.getId())) ||
-                (sender.getFriendRequests() != null && sender.getFriendRequests().contains(receiver.getId()))) {
+        if (areFriendsOrRequestExists(sender, receiverId)) {
             return "Friend request already sent or already friends";
         }
 
-        // Alıcı kullanıcıya arkadaşlık isteği gönderme
-        if (receiver.getFriendRequests() == null) {
-            receiver.setFriendRequests(new ArrayList<>());
-        }
-
-        // Aynı kullanıcıya birden fazla istek gönderilmesini engellemek için kontrol
-        if (!receiver.getFriendRequests().contains(sender.getId())) {
-            receiver.getFriendRequests().add(sender.getId());
-            userRepository.save(receiver);
-
-            // Receiver kullanıcısına bildirim gönderme işlemi
-            String notificationMessage = "You have received a friend request from " + sender.getUsername();
-            NotificationService notificationService = new NotificationService(userRepository);
-            notificationService.sendNotification(receiver.getId(), notificationMessage);
-
-            return "Friend request sent successfully";
-        } else {
-            return "Friend request already sent";
-        }
+        sendFriendRequestAndNotify(sender, receiverId);
+        return "Friend request sent successfully";
     }
 
-    public String acceptFriendRequest(String userId, String friendId) {
+    private boolean areFriendsOrRequestExists(User sender, String receiverId) {
+        // Arkadaşlık isteği veritabanında var mı kontrol edilir
+        return friendshipRequestRepository.existsBySenderIdAndReceiverId(sender.getId(), receiverId);
+    }
+
+    private void sendFriendRequestAndNotify(User sender, String receiverId) {
+        // Arkadaşlık isteği oluşturulur ve veritabanına kaydedilir
+        FriendshipRequest friendshipRequest = new FriendshipRequest(sender.getId(), receiverId, RequestStatus.PENDING);
+        friendshipRequestRepository.save(friendshipRequest);
+
+        // Alıcı kullanıcıya bildirim gönderme işlemi
+        String notificationMessage = "You have received a friend request from " + sender.getUsername();
+        NotificationService notificationService = new NotificationService(userRepository);
+        notificationService.sendNotification(receiverId, notificationMessage);
+    }
+
+
+    public String handleFriendRequest(String requestId, String userId, boolean accept) {
+        // FriendshipRequest koleksiyonundan ilgili isteği bul
+        FriendshipRequest friendshipRequest = friendshipRequestRepository.findById(requestId)
+                .orElseThrow(() -> new NotFoundException("Friendship request not found"));
+
+        // İsteğin durumunu kabul edildi veya reddedildi olarak güncelle
+        if (accept) {
+            friendshipRequest.setStatus(RequestStatus.ACCEPTED);
+        } else {
+            friendshipRequest.setStatus(RequestStatus.REJECTED);
+        }
+
+        // Güncellenmiş istek nesnesini veritabanına kaydet
+        friendshipRequestRepository.save(friendshipRequest);
+
+        // İlgili kullanıcıyı bul
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found with id:" + userId));
-        User friend = userRepository.findById(friendId)
-                .orElseThrow(() -> new NotFoundException("Friend not found with id:" + friendId));
 
-        // Kullanıcının arkadaş listelerini kontrol eder ve gerekirse yeni boş listeler oluşturur
+        // Kabullenme durumunda arkadaş listesine ekle, reddetme durumunda istek listesinden kaldır
+        if (accept) {
+            // Arkadaş listesine ekle
+            user.getFriends().add(friendshipRequest.getSenderId());
 
-        if (user.getFriends() == null) {           //Eğer kullanıcının arkadaş listesi null ise, yeni bir arkadaş listesi oluşturulur.
-            user.setFriends(new ArrayList<>());
+            // İsteği atan kullanıcının arkadaş listesine de eklenmeli
+            User requester = userRepository.findById(friendshipRequest.getSenderId())
+                    .orElseThrow(() -> new NotFoundException("User not found with id:" + friendshipRequest.getSenderId()));
+            requester.getFriends().add(userId);
+            userRepository.save(requester);
+        } else {
+            // Reddetme durumunda istek listesinden kaldır
+            user.getFriendRequests().remove(requestId);
         }
 
-        if (friend.getFriends() == null) {        //Eğer arkadaş olarak eklenmek istenen kullanıcının arkadaş listesi null ise, yeni ark. listesi oluşturulur.
-            friend.setFriends(new ArrayList<>());
-        }
-
-        if (friend.getFriendRequests() == null) { //Eğer arkadaş eklenmek istenen kullanıcının arkadaş istek list null ise, yeni ark ist. listesi oluşturlur.
-            friend.setFriendRequests(new ArrayList<>());
-        }
-
-        // Gönderenin friendRequests listesinden alıcının ID'sini kaldırma
-        user.getFriendRequests().remove(friendId);
-
-        // Alıcının friendRequests listesinden gönderenin ID'sini kaldırma
-        friend.getFriendRequests().remove(userId);
-
-        // Her iki kullanıcının da friend listesine karşı tarafın ID'sini ekleme
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
-
-        // Veritabanına değişiklikleri kaydet
+        // Kullanıcıyı kaydet
         userRepository.save(user);
-        userRepository.save(friend);
 
-        return "Friend request accepted successfully";
+        // Başarılı mesajını döndür
+        return "Friend request " + (accept ? "accepted" : "rejected") + " successfully";
     }
 
-    public String rejectFriendRequest() {
-        return "Friend request rejected successfully";
-    }
 
 }

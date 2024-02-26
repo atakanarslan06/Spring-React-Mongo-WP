@@ -27,8 +27,8 @@ public class User implements UserDetails {
     private String password;
     private String phoneNumber;
     private String profile_picture;
-    private List<String> friendRequests = new ArrayList<>();
     private List<String> friends = new ArrayList<>();
+    private List<String> friendRequests = new ArrayList<>();
     private boolean active;
 
     private Role role = Role.USER;
@@ -66,9 +66,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
-    }
-
-    public void addFriend(String friendId) {
-        friends.add(friendId);
     }
 }
