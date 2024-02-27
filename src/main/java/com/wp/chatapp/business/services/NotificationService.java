@@ -19,7 +19,6 @@ public class NotificationService {
         Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            // Kullanıcıya bildirim gönderme işlemi burada gerçekleştirilir
             System.out.println("Notification sent to user " + user.getUsername() + ": " + message);
         } else {
             throw new NotFoundException("User with id " + userId + " not found");

@@ -22,6 +22,7 @@ public class UserService {
         this.friendshipRequestRepository = friendshipRequestRepository;
     }
 
+
     public String createUser(UserDto userDto) {
         try {
             User user = User.builder()
@@ -93,7 +94,7 @@ public class UserService {
         User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found with phone number: " + phoneNumber));
         if (!user.isActive()) {
-            throw new NotFoundException("Inactive user found with phone number: " + phoneNumber);
+            throw new NotFoundException("User found with phone number: " + phoneNumber);
         }
         return user;
     }
