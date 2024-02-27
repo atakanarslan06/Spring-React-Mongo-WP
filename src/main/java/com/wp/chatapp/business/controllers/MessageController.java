@@ -29,16 +29,15 @@ public class MessageController {
         return ResponseEntity.ok(messages);
     }
 
-    @GetMapping("/last/{userId}")
-    public ResponseEntity<MessageDto> getLastMessageByUserId(@PathVariable String userId){
-        MessageDto lastMessage = messageService.getLastMessageByUserId(userId);
-        return ResponseEntity.ok(lastMessage);
-    }
     @PatchMapping("/{messageId}")
     public ResponseEntity<String> deleteMessage(@PathVariable String messageId) {
         messageService.deleteMessage(messageId);
         return ResponseEntity.ok("Message deleted successfully");
     }
 
-
+    @GetMapping("/last/{userId}")
+    public ResponseEntity<MessageDto> getLastMessageByUserId(@PathVariable String userId){
+        MessageDto lastMessage = messageService.getLastMessageByUserId(userId);
+        return ResponseEntity.ok(lastMessage);
+    }
 }

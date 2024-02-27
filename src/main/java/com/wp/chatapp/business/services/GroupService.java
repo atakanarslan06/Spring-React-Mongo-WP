@@ -18,8 +18,9 @@ public class GroupService {
     public GroupService(GroupRepository groupRepository) {
         this.groupRepository = groupRepository;
     }
-    public List<Group> getAllGroups(){
-        return groupRepository.findAll();
+    public List<Group> getAllGroups() {
+        // Sadece aktif grupları al
+        return groupRepository.findByIsActiveTrue();
     }
 
     public String createGroup(GroupDto groupDto){
@@ -42,9 +43,10 @@ public class GroupService {
 
 
 
-    public Group getGroupById(String groupId){
-        return groupRepository.findById(groupId)
-                .orElseThrow(() -> new NotFoundException("Group not find with id: " + groupId));
+    public Group getGroupById(String groupId) {
+        // Belirli bir ID'ye sahip grubu al ve aktiflik durumunu kontrol et
+        return groupRepository.findByIdAndActiveTrue(groupId)
+                .orElseThrow(() -> new NotFoundException("Active group not found with id: " + groupId));
     }
 
     public String updateGroup(String groupId, GroupDto groupDto ){

@@ -39,16 +39,15 @@ public class GroupController {
         return ResponseEntity.ok(group);
     }
 
-    @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<String> deactivateGroup(@PathVariable String id){
-        String response = groupService.deactivateGroup(id);
-        return ResponseEntity.ok(response);
-    }
-
     @PostMapping("/{id}")
     public ResponseEntity<String> manageGroupUsers(@PathVariable String id, @RequestBody GroupUserOperationDto dto) {
         String response = groupService.manageGroupUsers(id, dto);
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateGroup(@PathVariable String id){
+        String response = groupService.deactivateGroup(id);
+        return ResponseEntity.ok(response);
+    }
 }

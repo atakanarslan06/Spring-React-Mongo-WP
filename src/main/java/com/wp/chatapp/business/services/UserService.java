@@ -90,8 +90,12 @@ public class UserService {
 
 
     public User findByPhoneNumber(String phoneNumber) {
-        return userRepository.findByPhoneNumber(phoneNumber)
+        User user = userRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() -> new NotFoundException("User not found with phone number: " + phoneNumber));
+        if (!user.isActive()) {
+            throw new NotFoundException("Inactive user found with phone number: " + phoneNumber);
+        }
+        return user;
     }
 
     public String sendFriendRequest(String senderId, String receiverId) {
