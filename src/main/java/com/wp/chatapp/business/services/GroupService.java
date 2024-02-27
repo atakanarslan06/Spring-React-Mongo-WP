@@ -1,6 +1,8 @@
 package com.wp.chatapp.business.services;
 
 import com.wp.chatapp.business.dto.GroupDto;
+import com.wp.chatapp.business.dto.GroupUserOperationDto;
+import com.wp.chatapp.business.enums.GroupOperationType;
 import com.wp.chatapp.dal.models.Group;
 import com.wp.chatapp.dal.repositories.GroupRepository;
 import com.wp.chatapp.exceptions.NotFoundException;
@@ -56,26 +58,6 @@ public class GroupService {
 
          return "Group updated successfully";
     }
-
-    public String addUsersToGroup(String groupId, List<String> userIds) {
-        // Grubu veritabanından al
-        Group group = groupRepository.findById(groupId)
-                .orElseThrow(() -> new NotFoundException("Group not found with id: " + groupId));
-
-        // Gruba eklenen her kullanıcı için
-        for (String userId : userIds) {
-            // Eğer kullanıcı daha önce gruba eklenmemişse
-            if (!group.getMembers().contains(userId)) {
-                // Kullanıcıyı gruba ekle
-                group.getMembers().add(userId);
-            }
-        }
-
-        // Değişiklikleri veritabanına kaydet
-        groupRepository.save(group);
-
-        return "Users added to group successfully";
-    }
     public String deactivateGroup(String groupId){
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new NotFoundException("Group not found with id:" +groupId));
@@ -86,20 +68,36 @@ public class GroupService {
         return "Group deactivated successfully";
     }
 
-    public String removeUserFromGroup(String groupId, String userId) {
+    public String manageGroupUsers(String groupId, GroupUserOperationDto dto) {
+        // Grubu veritabanından al
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new NotFoundException("Group not found with id: " + groupId));
 
         List<String> members = group.getMembers();
 
-        // Kullanıcı listede varsa kaldır
-        if (members.contains(userId)) {
-            members.remove(userId);
+        // İstek gövdesindeki işlem türüne göre kullanıcıları ekleyin veya kaldırın
+        if (dto.getOperationType() == GroupOperationType.ADD_MEMBER) {
+            for (String userId : dto.getUserIds()) {
+                // Eğer kullanıcı daha önce gruba eklenmemişse
+                if (!members.contains(userId)) {
+                    // Kullanıcıyı gruba ekle
+                    members.add(userId);
+                }
+            }
             group.setMembers(members);
             groupRepository.save(group);
-            return "User removed from group successfully";
+            return "Users added to group successfully";
+        } else if (dto.getOperationType() == GroupOperationType.REMOVE_MEMBER) {
+            for (String userId : dto.getUserIds()) {
+                // Kullanıcı listede varsa kaldır
+                members.remove(userId);
+            }
+            group.setMembers(members);
+            groupRepository.save(group);
+            return "Users removed from group successfully";
         } else {
-            return "User is not a member of the group";
+            return "Invalid operation type";
         }
     }
+
 }

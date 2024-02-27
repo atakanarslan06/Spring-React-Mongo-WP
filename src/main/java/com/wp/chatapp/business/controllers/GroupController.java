@@ -1,6 +1,7 @@
 package com.wp.chatapp.business.controllers;
 
 import com.wp.chatapp.business.dto.GroupDto;
+import com.wp.chatapp.business.dto.GroupUserOperationDto;
 import com.wp.chatapp.business.services.GroupService;
 import com.wp.chatapp.dal.models.Group;
 import org.springframework.http.ResponseEntity;
@@ -44,16 +45,9 @@ public class GroupController {
         return ResponseEntity.ok(response);
     }
 
-
-    @PostMapping("/{id}/addUsers")
-    public ResponseEntity<String> addUsersToGroup(@PathVariable String id, @RequestBody GroupDto dto){
-        String response = groupService.addUsersToGroup(id, dto.getUserIds());
-        return ResponseEntity.ok(response);
-    }
-
-    @PatchMapping("/{groupId}/removeUser/{userId}")
-    public ResponseEntity<String> removeUserFromGroup(@PathVariable String groupId, @PathVariable String userId) {
-        String response = groupService.removeUserFromGroup(groupId, userId);
+    @PostMapping("/{id}")
+    public ResponseEntity<String> manageGroupUsers(@PathVariable String id, @RequestBody GroupUserOperationDto dto) {
+        String response = groupService.manageGroupUsers(id, dto);
         return ResponseEntity.ok(response);
     }
 

@@ -1,4 +1,4 @@
-package com.wp.chatapp.business.dto;
+package com.wp.chatapp.business.controllers.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
