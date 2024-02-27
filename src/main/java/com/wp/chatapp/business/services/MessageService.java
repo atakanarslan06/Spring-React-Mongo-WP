@@ -42,4 +42,36 @@ public class MessageService {
                 .build();
         messageRepository.save(message);
     }
+
+    public MessageDto getLastMessageByUserId(String userId) {
+        // Kullanıcının gönderdiği son mesajı al
+        List<Message> sentMessages = messageRepository.findBySenderIdOrderByTimestampDesc(userId);
+        // Kullanıcının aldığı son mesajı al
+        List<Message> receivedMessages = messageRepository.findByReceiverIdOrderByTimestampDesc(userId);
+
+        // Gönderilen ve alınan mesajların tarihlerini karşılaştırarak en yeni mesajı belirle
+        LocalDateTime latestSentMessageTime = sentMessages.isEmpty() ? null : sentMessages.get(0).getTimestamp();
+        LocalDateTime latestReceivedMessageTime = receivedMessages.isEmpty() ? null : receivedMessages.get(0).getTimestamp();
+
+        if (latestSentMessageTime == null && latestReceivedMessageTime == null) {
+            // Kullanıcının gönderdiği veya aldığı hiç mesaj yoksa null dön
+            return null;
+        } else if (latestSentMessageTime == null) {
+            // Kullanıcının sadece aldığı mesajlar varsa, en son aldığı mesajı dön
+            return convertToDto(receivedMessages.get(0));
+        } else if (latestReceivedMessageTime == null) {
+            // Kullanıcının sadece gönderdiği mesajlar varsa, en son gönderdiği mesajı dön
+            return convertToDto(sentMessages.get(0));
+        } else {
+            // Hem gönderilen hem de alınan mesajlar varsa, en yeni mesajı belirle
+            LocalDateTime latestMessageTime = latestSentMessageTime.isAfter(latestReceivedMessageTime) ?
+                    latestSentMessageTime : latestReceivedMessageTime;
+
+            // En yeni mesajın bilgilerini dön
+            Message latestMessage = latestSentMessageTime.isAfter(latestReceivedMessageTime) ?
+                    sentMessages.get(0) : receivedMessages.get(0);
+            return convertToDto(latestMessage);
+        }
+    }
+
 }

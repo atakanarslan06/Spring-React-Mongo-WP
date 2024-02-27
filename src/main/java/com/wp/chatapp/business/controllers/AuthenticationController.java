@@ -1,8 +1,8 @@
 package com.wp.chatapp.business.controllers;
 
-import com.wp.chatapp.business.controllers.requests.AuthenticationRequest;
-import com.wp.chatapp.business.controllers.responses.AuthenticationResponse;
-import com.wp.chatapp.business.controllers.requests.RegisterRequest;
+import com.wp.chatapp.business.dto.requests.AuthenticationRequest;
+import com.wp.chatapp.business.dto.responses.AuthenticationResponse;
+import com.wp.chatapp.business.dto.requests.RegisterRequest;
 import com.wp.chatapp.business.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

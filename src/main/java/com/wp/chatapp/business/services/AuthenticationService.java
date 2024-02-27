@@ -1,8 +1,8 @@
 package com.wp.chatapp.business.services;
 
-import com.wp.chatapp.business.controllers.requests.AuthenticationRequest;
-import com.wp.chatapp.business.controllers.responses.AuthenticationResponse;
-import com.wp.chatapp.business.controllers.requests.RegisterRequest;
+import com.wp.chatapp.business.dto.requests.AuthenticationRequest;
+import com.wp.chatapp.business.dto.responses.AuthenticationResponse;
+import com.wp.chatapp.business.dto.requests.RegisterRequest;
 import com.wp.chatapp.business.enums.Role;
 import com.wp.chatapp.dal.models.User;
 import com.wp.chatapp.dal.repositories.UserRepository;

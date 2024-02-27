@@ -75,9 +75,7 @@ public class UserController {
             @PathVariable String userId,
             @RequestParam boolean accept
     ) {
-        // UserService içindeki handleFriendRequest servisini çağır
         String response = userService.handleFriendRequest(requestId, userId, accept);
-        // Servisten dönen cevabı HTTP yanıtı olarak döndür
         return ResponseEntity.ok(response);
     }
 

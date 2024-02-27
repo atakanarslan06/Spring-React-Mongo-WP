@@ -1,4 +1,4 @@
-package com.wp.chatapp.business.controllers.requests;
+package com.wp.chatapp.business.dto.requests;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
+public class AuthenticationRequest {
 
-    private String username;
     private String email;
-    private String phoneNumber;
-    private String password;
+     String password;
 }
