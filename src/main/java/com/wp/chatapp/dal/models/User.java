@@ -31,16 +31,16 @@ public class User implements UserDetails {
     private List<String> friendRequests = new ArrayList<>();
     private boolean active;
 
-    private Role role = Role.USER;
+    private Role role;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.getRoleName()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
     }
 
     @Override
