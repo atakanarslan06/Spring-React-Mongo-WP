@@ -21,4 +21,5 @@ public class Message {
     private String receiverId;
     private String content;
     private LocalDateTime timestamp;
+    private boolean deleted;
 }

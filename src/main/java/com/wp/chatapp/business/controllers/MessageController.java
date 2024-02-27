@@ -17,16 +17,16 @@ public class MessageController {
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }
+    @PostMapping
+    public ResponseEntity<String> sendMessage(@RequestBody MessageDto messageDto){
+        messageService.sendMessage(messageDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Message sent successfully");
+    }
 
     @GetMapping("/{userId}")
     public ResponseEntity<List<MessageDto>> getMessagesByUserId(@PathVariable String userId){
         List<MessageDto> messages = messageService.getMessagesByUserId(userId);
         return ResponseEntity.ok(messages);
-    }
-    @PostMapping
-    public ResponseEntity<String> sendMessage(@RequestBody MessageDto messageDto){
-        messageService.sendMessage(messageDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Message sent successfully");
     }
 
     @GetMapping("/last/{userId}")
@@ -34,4 +34,11 @@ public class MessageController {
         MessageDto lastMessage = messageService.getLastMessageByUserId(userId);
         return ResponseEntity.ok(lastMessage);
     }
+    @PatchMapping("/{messageId}")
+    public ResponseEntity<String> deleteMessage(@PathVariable String messageId) {
+        messageService.deleteMessage(messageId);
+        return ResponseEntity.ok("Message deleted successfully");
+    }
+
+
 }

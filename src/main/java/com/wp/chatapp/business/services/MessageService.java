@@ -3,6 +3,7 @@ package com.wp.chatapp.business.services;
 import com.wp.chatapp.business.dto.MessageDto;
 import com.wp.chatapp.dal.models.Message;
 import com.wp.chatapp.dal.repositories.MessageRepository;
+import com.wp.chatapp.exceptions.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -21,9 +22,11 @@ public class MessageService {
         List<Message> messages = messageRepository.findByReceiverIdOrSenderId(userId, userId);
 
         return messages.stream()
+                .filter(message -> !message.isDeleted()) // Silinmemiş mesajları filtrele
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
     private MessageDto convertToDto(Message message) {
         return MessageDto.builder()
                 .id(message.getId())
@@ -58,20 +61,52 @@ public class MessageService {
             return null;
         } else if (latestSentMessageTime == null) {
             // Kullanıcının sadece aldığı mesajlar varsa, en son aldığı mesajı dön
-            return convertToDto(receivedMessages.get(0));
+            MessageDto lastReceivedMessageDto = convertToDto(receivedMessages.get(0));
+            if (!receivedMessages.get(0).isDeleted()) {
+                return lastReceivedMessageDto;
+            } else {
+                // Eğer en son alınan mesaj silinmişse, bir önceki mesajı getir
+                return getNextNonDeletedMessage(userId);
+            }
         } else if (latestReceivedMessageTime == null) {
             // Kullanıcının sadece gönderdiği mesajlar varsa, en son gönderdiği mesajı dön
-            return convertToDto(sentMessages.get(0));
+            MessageDto lastSentMessageDto = convertToDto(sentMessages.get(0));
+            if (!sentMessages.get(0).isDeleted()) {
+                return lastSentMessageDto;
+            } else {
+                // Eğer en son gönderilen mesaj silinmişse, bir önceki mesajı getir
+                return getNextNonDeletedMessage(userId);
+            }
         } else {
-            // Hem gönderilen hem de alınan mesajlar varsa, en yeni mesajı belirle
-            LocalDateTime latestMessageTime = latestSentMessageTime.isAfter(latestReceivedMessageTime) ?
-                    latestSentMessageTime : latestReceivedMessageTime;
-
             // En yeni mesajın bilgilerini dön
             Message latestMessage = latestSentMessageTime.isAfter(latestReceivedMessageTime) ?
                     sentMessages.get(0) : receivedMessages.get(0);
-            return convertToDto(latestMessage);
+
+            // Mesajın silinip silinmediğini kontrol et
+            if (!latestMessage.isDeleted()) {
+                return convertToDto(latestMessage);
+            } else {
+                // Eğer mesaj silinmişse, bir önceki mesajı dön
+                return getNextNonDeletedMessage(userId);
+            }
         }
+    }
+
+    public MessageDto getNextNonDeletedMessage(String userId) {
+        List<Message> messages = messageRepository.findByReceiverIdOrderByTimestampDesc(userId);
+        for (Message message : messages) {
+            if (!message.isDeleted()) {
+                return convertToDto(message);
+            }
+        }
+        return null;
+    }
+
+    public void deleteMessage(String messageId) {
+        Message message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new NotFoundException("Message not found with id: " + messageId));
+        message.setDeleted(true);
+        messageRepository.save(message);
     }
 
 }
