@@ -29,7 +29,6 @@ public class MessageService {
 
     private MessageDto convertToDto(Message message) {
         return MessageDto.builder()
-                .id(message.getId())
                 .senderId(message.getSenderId())
                 .receiverId(message.getReceiverId())
                 .content(message.getContent())

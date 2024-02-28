@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 @Builder
 public class GroupDto {
-    private String id;
+
     private String name;
     private String adminUserId;
     private List<String> members;
