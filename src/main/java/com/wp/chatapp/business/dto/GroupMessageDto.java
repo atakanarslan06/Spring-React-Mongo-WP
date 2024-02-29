@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class GroupMessageDto {
     private String groupId;
+    private String type;
     private String senderId;
     private String content;
     private LocalDateTime timestamp;
