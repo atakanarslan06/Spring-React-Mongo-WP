@@ -19,6 +19,7 @@ public class GroupMessage {
     private String id;
     private String groupId;
     private String senderId;
+    private String type;
     private String content;
     private LocalDateTime timestamp;
     private boolean deleted;

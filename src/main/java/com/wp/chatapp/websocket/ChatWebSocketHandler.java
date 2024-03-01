@@ -25,17 +25,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    protected void handleTextMessage(
-           @NonNull WebSocketSession session,
-            @NonNull TextMessage message){
+    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         String payload = message.getPayload();
-        // Gelen JSON mesajını uygun DTO nesnesine dönüştürme
-        if (!payload.isEmpty()) {
-            handleMessage(payload);
-        }
-    }
-
-    private void handleMessage(String payload) {
         try {
             // Gelen JSON mesajını uygun DTO nesnesine dönüştürme
             MessageDto messageDto = objectMapper.readValue(payload, MessageDto.class);
