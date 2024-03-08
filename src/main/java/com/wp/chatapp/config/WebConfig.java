@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedOriginPattern("*");
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,
@@ -28,7 +28,8 @@ public class WebConfig implements WebMvcConfigurer {
                 "GET",
                 "POST",
                 "PUT",
-                "PATCH"
+                "PATCH",
+                "OPTIONS"
         ));
         config.setMaxAge(3600L);
         source.registerCorsConfiguration("/**", config);

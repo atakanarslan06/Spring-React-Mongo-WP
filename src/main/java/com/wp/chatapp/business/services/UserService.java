@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final FriendshipRequestRepository friendshipRequestRepository;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, FriendshipRequestRepository friendshipRequestRepository) {
+    public UserService(UserRepository userRepository, FriendshipRequestRepository friendshipRequestRepository, JwtService jwtService) {
         this.userRepository = userRepository;
         this.friendshipRequestRepository = friendshipRequestRepository;
+        this.jwtService = jwtService;
     }
 
 
@@ -169,5 +171,28 @@ public class UserService {
         return "Friend request " + (accept ? "accepted" : "rejected") + " successfully";
     }
 
+    public List<User> getFriends(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
+        List<String> friendIds = user.getFriends();
+        return userRepository.findAllById(friendIds);
+    }
+
+    public List<FriendshipRequest> getFriendshipRequests(String userId) {
+        // Kullanıcıyı bul
+         userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        // Kullanıcının gelen arkadaşlık isteklerini döndür
+        return friendshipRequestRepository.findByReceiverIdAndStatus(userId, RequestStatus.PENDING);
+    }
+
+    public User getCurrentUser(String token) {
+        String userEmail = jwtService.extractUsername(token); // JWT tokeninden kullanıcı e-postasını al
+        return userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new NotFoundException("Kullanıcı bulunamadı"));
+    }
 }
+
+

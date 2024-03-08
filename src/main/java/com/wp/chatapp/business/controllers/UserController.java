@@ -2,6 +2,7 @@ package com.wp.chatapp.business.controllers;
 
 import com.wp.chatapp.business.dto.UserDto;
 import com.wp.chatapp.business.services.UserService;
+import com.wp.chatapp.dal.models.FriendshipRequest;
 import com.wp.chatapp.dal.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,10 @@ import java.util.Optional;
 public class UserController {
     private final UserService userService;
 
+
     public UserController(UserService userService) {
         this.userService = userService;
+
     }
 
     @PostMapping
@@ -34,8 +37,6 @@ public class UserController {
         String response = userService.updateUser(id, userDto);
         return ResponseEntity.ok(response);
     }
-    //Service katmanına alınaca if else
-    //Getlerde aktif kayıtların gelmesi lazım
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserById(@PathVariable String id){
         Optional<User> userOptional = userService.getUserById(id);
@@ -78,6 +79,26 @@ public class UserController {
         String response = userService.handleFriendRequest(requestId, userId, accept);
         return ResponseEntity.ok(response);
     }
+    @GetMapping("/{id}/friends")
+    public ResponseEntity<List<User>> getFriends(@PathVariable String id){
+        List<User> friends = userService.getFriends(id);
+        return ResponseEntity.ok(friends);
+    }
+
+    @GetMapping("/{id}/friendshipRequests")
+    public ResponseEntity<List<FriendshipRequest>> getFriendshipRequests(@PathVariable String id){
+        List<FriendshipRequest> friendshipRequests = userService.getFriendshipRequests(id);
+        return ResponseEntity.ok(friendshipRequests);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getCurrentUser(@RequestHeader("Authorization") String token) {
+        User currentUser = userService.getCurrentUser(token);
+        return ResponseEntity.ok(currentUser);
+    }
+
+
+
 
 
 }
