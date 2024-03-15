@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/messages")
@@ -17,6 +18,7 @@ public class MessageController {
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
     }
+
     @PostMapping
     public ResponseEntity<String> sendMessage(@RequestBody MessageDto messageDto){
         messageService.sendMessage(messageDto);
@@ -36,8 +38,8 @@ public class MessageController {
     }
 
     @GetMapping("/last/{userId}")
-    public ResponseEntity<MessageDto> getLastMessageByUserId(@PathVariable String userId){
-        MessageDto lastMessage = messageService.getLastMessageByUserId(userId);
-        return ResponseEntity.ok(lastMessage);
+    public ResponseEntity<List<MessageDto>> getLastMessagesForEachUser(@PathVariable String userId) {
+        List<MessageDto> lastMessages = messageService.getLastMessagesForEachUser(userId);
+        return ResponseEntity.ok(lastMessages);
     }
 }

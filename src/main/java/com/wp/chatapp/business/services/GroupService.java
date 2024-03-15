@@ -102,4 +102,7 @@ public class GroupService {
         }
     }
 
+    public List<Group> getGroupsByUserId(String userId) {
+        return groupRepository.findGroupsByMembersContains(userId);
+    }
 }

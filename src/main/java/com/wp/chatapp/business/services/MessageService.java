@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +30,12 @@ public class MessageService {
 
     private MessageDto convertToDto(Message message) {
         return MessageDto.builder()
+                .id(message.getId())
                 .senderId(message.getSenderId())
                 .receiverId(message.getReceiverId())
                 .content(message.getContent())
                 .timestamp(message.getTimestamp())
+                .deleted(message.isDeleted())
                 .build();
     }
     public void sendMessage(MessageDto messageDto) {
@@ -108,4 +111,8 @@ public class MessageService {
         messageRepository.save(message);
     }
 
+
+    public List<MessageDto> getLastMessagesForEachUser(String userId) {
+        return messageRepository.getLastMessagesForEachUser(userId);
+    }
 }

@@ -45,7 +45,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     private void handleMessage(MessageDto messageDto) {
         // Gelen bireysel mesajı işleme
         messageService.sendMessage(messageDto);
-        // İşleme aldıktan sonra isteğe bağlı olarak diğer işlemler de yapılabilir
+
     }
 
     private void handleGroupMessage(MessageDto messageDto) {
@@ -57,8 +57,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
                 .timestamp(messageDto.getTimestamp())
                 .build();
 
-        // Oluşturulan GroupMessageDto nesnesini kullanarak işlemleri yapma
+
         groupMessageService.sendGroupMessage(groupMessageDto);
-        // İşleme aldıktan sonra isteğe bağlı olarak diğer işlemler de yapılabilir
+
     }
 }

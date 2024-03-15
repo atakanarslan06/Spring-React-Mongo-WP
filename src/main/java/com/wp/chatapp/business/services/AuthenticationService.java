@@ -30,7 +30,7 @@ public class AuthenticationService {
                 .build();
         user.setActive(true);
         repository.save(user);
-        var jwtToken = jwtService.generateToken(user); // Burada user nesnesini doğrudan geçiriyoruz
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();
@@ -45,7 +45,7 @@ public class AuthenticationService {
         );
         var user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
-        var jwtToken = jwtService.generateToken(user); // Burada user nesnesini doğrudan geçiriyoruz
+        var jwtToken = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .build();

@@ -50,4 +50,10 @@ public class GroupController {
         String response = groupService.deactivateGroup(id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Group>> getGroupsByUserId(@PathVariable String userId){
+        List<Group> groups = groupService.getGroupsByUserId(userId);
+        return ResponseEntity.ok(groups);
+    }
 }

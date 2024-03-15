@@ -8,6 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Document(value = "messages")
 @Data
@@ -22,5 +23,6 @@ public class Message {
     private String groupId;
     private String content;
     private LocalDateTime timestamp;
+    private boolean groupMessage;
     private boolean deleted;
 }

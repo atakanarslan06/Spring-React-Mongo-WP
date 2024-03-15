@@ -19,10 +19,5 @@ public class FriendshipRequest {
     private String senderId;
     private String receiverId;
     private RequestStatus status;
-
-    public FriendshipRequest(String senderId, String receiverId, RequestStatus status) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
-        this.status = status;
-    }
+    private String senderUsername;
 }

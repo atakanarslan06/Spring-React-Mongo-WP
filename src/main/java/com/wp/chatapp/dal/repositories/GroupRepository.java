@@ -11,4 +11,6 @@ import java.util.Optional;
 public interface GroupRepository extends MongoRepository<Group, String> {
     List<Group> findByIsActiveTrue();
     Optional<Group> findByIdAndActiveTrue(String id);
+
+    List<Group> findGroupsByMembersContains(String userId);
 }

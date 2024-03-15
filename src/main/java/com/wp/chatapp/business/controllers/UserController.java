@@ -5,9 +5,12 @@ import com.wp.chatapp.business.services.UserService;
 import com.wp.chatapp.dal.models.FriendshipRequest;
 import com.wp.chatapp.dal.models.User;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -63,8 +66,9 @@ public class UserController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/sendFriendRequest/{senderId}/{receiverId}")
-    public ResponseEntity<String> sendFriendRequest(@PathVariable String senderId, @PathVariable String receiverId){
+    @PostMapping("/sendFriendRequest/{receiverId}")
+    public ResponseEntity<String> sendFriendRequest(@PathVariable String receiverId, @RequestBody Map<String, String> requestBody) {
+        String senderId = requestBody.get("senderId");
         String response = userService.sendFriendRequest(senderId, receiverId);
         return ResponseEntity.ok(response);
     }
@@ -90,15 +94,20 @@ public class UserController {
         List<FriendshipRequest> friendshipRequests = userService.getFriendshipRequests(id);
         return ResponseEntity.ok(friendshipRequests);
     }
-
     @GetMapping("/me")
-    public ResponseEntity<User> getCurrentUser(@RequestHeader("Authorization") String token) {
-        User currentUser = userService.getCurrentUser(token);
-        return ResponseEntity.ok(currentUser);
+    public User getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
+        String userEmail = userDetails.getUsername();
+        return userService.findByEmail(userEmail);
     }
 
+    @PatchMapping("/deleteFriend")
+    public ResponseEntity<String> deleteFriend(@RequestBody Map<String, String> requestBody) {
+        String userId = requestBody.get("userId");
+        String friendId = requestBody.get("friendId");
 
-
+        String response = userService.deleteFriend(userId, friendId);
+        return ResponseEntity.ok(response);
+    }
 
 
 }

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
 @Document(value = "users")
 @Data
 @Builder
@@ -38,6 +39,10 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
+    public void removeFriend(User friend) {
+        friends.remove(friend);
+        friend.getFriends().remove(this);
+    }
     @Override
     public String getUsername() {
         return email;
@@ -67,4 +72,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
