@@ -28,6 +28,7 @@ public class GroupMessageService {
 
     private GroupMessageDto convertToDto(GroupMessage groupMessage) {
         return GroupMessageDto.builder()
+                .id(groupMessage.getId())
                 .groupId(groupMessage.getGroupId())
                 .senderId(groupMessage.getSenderId())
                 .content(groupMessage.getContent())

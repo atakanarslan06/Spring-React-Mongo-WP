@@ -7,7 +7,9 @@ import com.wp.chatapp.dal.models.Group;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/groups")
@@ -17,10 +19,13 @@ public class GroupController {
         this.groupService = groupService;
     }
     @PostMapping
-    public ResponseEntity<String> createGroup(@RequestBody GroupDto groupDto){
+    public ResponseEntity<Map<String, String>> createGroup(@RequestBody GroupDto groupDto) {
         String response = groupService.createGroup(groupDto);
-        return ResponseEntity.ok(response);
+        Map<String, String> responseBody = new HashMap<>();
+        responseBody.put("message", response);
+        return ResponseEntity.ok(responseBody);
     }
+
     @GetMapping
     public ResponseEntity<List<Group>> getAllGroups(){
         List<Group> groups = groupService.getAllGroups();

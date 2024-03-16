@@ -1,5 +1,6 @@
 package com.wp.chatapp.business.dto;
 
+import com.wp.chatapp.business.enums.GroupOperationType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,5 +12,6 @@ public class GroupDto {
     private String name;
     private String adminUserId;
     private List<String> members;
+    private GroupOperationType operationType;
     private List<String> userIds;
 }

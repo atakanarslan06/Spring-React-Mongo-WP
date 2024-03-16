@@ -39,10 +39,6 @@ public class User implements UserDetails {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
-    public void removeFriend(User friend) {
-        friends.remove(friend);
-        friend.getFriends().remove(this);
-    }
     @Override
     public String getUsername() {
         return email;
