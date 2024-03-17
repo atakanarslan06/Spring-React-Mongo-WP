@@ -30,6 +30,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "PUT",
                 "PATCH",
                 "OPTIONS"
+
         ));
         config.setMaxAge(3600L);
         source.registerCorsConfiguration("/**", config);

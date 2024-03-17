@@ -61,4 +61,16 @@ public class GroupController {
         List<Group> groups = groupService.getGroupsByUserId(userId);
         return ResponseEntity.ok(groups);
     }
+
+    @PutMapping("/{groupId}/leave")
+    public ResponseEntity<String> leaveGroup(@PathVariable String groupId, @RequestBody String memberId) {
+        String response = groupService.leaveGroup(groupId, memberId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{groupId}/addMembers")
+    public ResponseEntity<String> addMembersToGroup(@PathVariable String groupId, @RequestBody List<String> memberIds) {
+        String response = groupService.addMembersToGroup(groupId, memberIds);
+        return ResponseEntity.ok(response);
+    }
 }
