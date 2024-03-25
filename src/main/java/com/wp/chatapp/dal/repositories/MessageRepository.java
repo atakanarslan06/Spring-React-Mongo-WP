@@ -17,8 +17,8 @@ public interface MessageRepository extends MongoRepository<Message, String> {
     @Aggregation({
             "{ $match: { $or: [ { senderId: ?0 }, { receiverId: ?0 } ] } }",
             "{ $sort: { timestamp: -1 } }",
-            "{ $group: { _id: { $cond: [ { $eq: ['$senderId', ?0] }, '$receiverId', '$senderId' ] }, message: { $first: '$content' }, timestamp: { $first: '$timestamp' }, groupMessage: { $first: '$groupMessage' } } }", // groupMessage alanı eklendi
-            "{ $project: { _id: 0, userId: '$_id', message: 1, timestamp: 1, groupMessage: 1 } }"
+            "{ $group: { _id: { $cond: [ { $eq: ['$senderId', ?0] }, '$receiverId', '$senderId' ] }, message: { $first: '$message' }, timestamp: { $first: '$timestamp' } } }",
+            "{ $project: { _id: 0, userId: '$_id', message: 1, timestamp: 1 } }"
     })
     List<MessageDto> getLastMessagesForEachUser(String userId);
 }

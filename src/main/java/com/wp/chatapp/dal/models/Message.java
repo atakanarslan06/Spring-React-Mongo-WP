@@ -20,7 +20,7 @@ public class Message {
     private String id;
     private String senderId;
     private String receiverId;
-    private String groupId;
+    private Optional groupId;
     private String content;
     private LocalDateTime timestamp;
     private boolean groupMessage;
